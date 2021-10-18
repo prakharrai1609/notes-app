@@ -86,7 +86,7 @@ search.addEventListener('input', function () {
     let find = search.value.toLowerCase();
     let card = document.getElementsByClassName('notecard');
     Array.from(card).forEach((e) => {
-        let cardContaingValue = e.getElementsByTagName('p')[0].innerText;
+        let cardContaingValue = e.getElementsByTagName('p')[0].innerText.toLowerCase();
         if (cardContaingValue.includes(find))
             e.style.display = 'block';
         else
