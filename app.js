@@ -1,9 +1,12 @@
 const text = document.getElementById('addtext');
+const title = document.getElementById('note-name');
 const add = document.getElementById('addnote');
 const clear = document.getElementById('clean');
 const search = document.getElementById('search');
 const searchbtn = document.getElementById('search-btn');
 const newnote = document.getElementById('new-note');
+
+// load the old notes from the local storage
 
 showNotes();
 
@@ -19,16 +22,27 @@ clear.addEventListener('click', () => {
 
 add.addEventListener('click', (addtext) => {
     let notes = localStorage.getItem('notes');
+    let titles = localStorage.getItem('titles');
 
     if (notes != null) {
         notesObj = JSON.parse(notes);
+        titleObj = JSON.parse(titles);
     } else {
         notesObj = [];
+        titleObj = [];
     }
 
     notesObj.push(text.value);
+    if (title.value == "")
+        title.value = "Untitled"
+    titleObj.push(title.value);
+
     localStorage.setItem('notes', JSON.stringify(notesObj));
+    localStorage.setItem('titles', JSON.stringify(titleObj));
+
     text.value = '';
+    title.value = '';
+
     showNotes();
     // console.log(notesObj);
 });
@@ -37,10 +51,14 @@ add.addEventListener('click', (addtext) => {
 
 function showNotes() {
     let notes = localStorage.getItem('notes');
+    let titles = localStorage.getItem('titles');
+
     if (notes != null) {
         notesObj = JSON.parse(notes);
+        titleObj = JSON.parse(titles);
     } else {
         notesObj = [];
+        titleObj = [];
     }
 
     let html = '';
@@ -49,7 +67,7 @@ function showNotes() {
             `
         <div class="card notecard mx-3 my-3" style="width: 18rem;">
             <div class="card-body">
-            <h5 class="card-title">Note ${index + 1}</h5>
+            <h5 class="card-title">${titleObj[index]}</h5>
             <p class="card-text">${element}</p>
             <button class = "btn btn-primary" id="${index}" onclick="deleteNote(this.id)">Delete note</button>
             </div>
@@ -68,14 +86,19 @@ function showNotes() {
 
 function deleteNote(index) {
     let notes = localStorage.getItem('notes');
+    let titles = localStorage.getItem('titles');
     if (notes != null) {
         notesObj = JSON.parse(notes);
+        titleObj = JSON.parse(titles);
     } else {
         notesObj = [];
+        titleObj = [];
     }
 
     notesObj.splice(index, 1);
+    titleObj.splice(index, 1);
     localStorage.setItem('notes', JSON.stringify(notesObj));
+    localStorage.setItem('titles', JSON.stringify(titleObj));
     showNotes();
 };
 
@@ -86,8 +109,10 @@ search.addEventListener('input', function () {
     let find = search.value.toLowerCase();
     let card = document.getElementsByClassName('notecard');
     Array.from(card).forEach((e) => {
-        let cardContaingValue = e.getElementsByTagName('p')[0].innerText.toLowerCase();
-        if (cardContaingValue.includes(find))
+        let cardContaingValue = e.getElementsByTagName('p')[0].innerText.toLocaleLowerCase();
+        let titleContaingVlaue = e.getElementsByTagName('h5')[0].innerText.toLocaleLowerCase();
+        // console.log(e);
+        if (cardContaingValue.includes(find) || titleContaingVlaue.includes(find))
             e.style.display = 'block';
         else
             e.style.display = 'none';
